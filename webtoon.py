@@ -7,6 +7,7 @@ import BeautifulSoup
 import MySQLdb
 import dbpass
 import fblib
+from xml.dom import minidom
 
 naver_webtoon = {
  '이말년씨리즈':'103759',
@@ -24,6 +25,16 @@ naver_webtoon = {
  '레사':'478262',
  '아는사람 이야기':'460686',
  '패션완':'325629',
+ '방과 후 전쟁활도':'517773',
+ '기사도':'471181',
+ '웃지 않는 개그반':'503253',
+ '죽음에 관하여':'500942',
+ '킬러분식':'483613'
+}
+
+daum_webtoon = {
+ '미생':'miseng',
+ '결혼해도 똑같네':'afterwedding'
 }
 
 db = None
@@ -82,6 +93,20 @@ def naverToon(toonid):
     link = 'http://comic.naver.com'+link
     return {'toon':toonTitle,'title':title,'link':link}
 
+def daumToon( id ) :
+    url = 'http://cartoon.media.daum.net/webtoon/rss/%s'%id
+    f = urllib.urlopen(url)
+    dom = minidom.parse(f)
+    toonTitle = dom.getElementsByTagName('title')[0].lastChild.nodeValue
+    lastest = dom.getElementsByTagName('item')[0]
+    title = lastest.getElementsByTagName('title')[0].lastChild.nodeValue
+    link = lastest.getElementsByTagName('link')[0].lastChild.nodeValue
+    toonTitle = toonTitle.encode('utf-8')
+    title = title.encode('utf-8')
+    link = link.encode('utf-8')
+
+    return {'toon':toonTitle, 'title':title, 'link': link}
+
 def crawling() :
     token = open('access_token.txt','r').read()
     pageid = '163794787090004'
@@ -94,7 +119,14 @@ def crawling() :
             insertDb(toon['toon'], toon['title'], toon['link'])
             msg = '%s / %s'%(toon['toon'],toon['title'])
             fblib.PostPageLink(pageid, pagetoken,msg,toon['link'])
-
+    for key in daum_webtoon.values():
+        toon = daumToon( key )
+        print toon['toon'],toon['title'],toon['link']
+        if not checkDup(toon['link']) :
+            insertDb(toon['toon'], toon['title'], toon['link'])
+            msg = '%s / %s'%(toon['toon'],toon['title'])
+            fblib.PostPageLink(pageid, pagetoken,msg,toon['link'])
+        
 
 
 if __name__ == '__main__':
