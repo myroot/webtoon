@@ -7,6 +7,7 @@ import BeautifulSoup
 import MySQLdb
 import dbpass
 import fblib
+import khan
 from xml.dom import minidom
 
 naver_webtoon = {
@@ -20,21 +21,23 @@ naver_webtoon = {
  '선천적얼간이들':'478261',
  '사랑일까':'492659',
  '당신만 몰라':'459545',
- '달콤한 인생':'387518',
- '고삼이 집나갔다':'400737',
+# '달콤한 인생':'387518',
+# '고삼이 집나갔다':'400737',
  '레사':'478262',
- '아는사람 이야기':'460686',
- '패션완':'325629',
- '방과 후 전쟁활도':'517773',
+# '아는사람 이야기':'460686',
+# '패션완':'325629',
+ '방과 후 전쟁활동':'517773',
  '기사도':'471181',
  '웃지 않는 개그반':'503253',
- '죽음에 관하여':'500942',
- '킬러분식':'483613'
+# '죽음에 관하여':'500942',
+# '킬러분식':'483613'
 }
 
 daum_webtoon = {
  '미생':'miseng',
- '결혼해도 똑같네':'afterwedding'
+ '결혼해도 똑같네':'afterwedding',
+ '마녀':'witchlove',
+ '잉어왕':'petermon'
 }
 
 db = None
@@ -77,7 +80,7 @@ def naverToon(toonid):
     html = html[idx+10:]
     idx = html.find('<h2>')
     html = html[idx+4:]
-    idx = html.find('</h2>')
+    idx = html.find('<')
     toonTitle = html[:idx].strip()
     idx = html.find(chunk)
     html = html[idx+len(chunk):]
@@ -126,6 +129,13 @@ def crawling() :
             insertDb(toon['toon'], toon['title'], toon['link'])
             msg = '%s / %s'%(toon['toon'],toon['title'])
             fblib.PostPageLink(pageid, pagetoken,msg,toon['link'])
+
+    toon = khan.dori()
+    print toon['toon'],toon['title'],toon['link']
+    if not checkDup(toon['link']) :
+        insertDb(toon['toon'], toon['title'], toon['link'])
+        msg = '%s / %s'%(toon['toon'],toon['title'])
+        fblib.PostPageLink(pageid, pagetoken,msg,toon['link']) 
         
 
 
