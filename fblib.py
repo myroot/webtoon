@@ -16,19 +16,22 @@ def getPageToken(user_token,pageid) :
 
 
 def PostPageLink(pageid, token, msg, link) :
-    url = 'https://graph.facebook.com/%s/feed'%(pageid)
+    #url = 'https://graph.facebook.com/v2.3/%s/feed'%(pageid)
+    url = 'https://graph.facebook.com/v2.3/feed'
     params = {'access_token':token,'message':msg,'link':link}
     params = urllib.urlencode(params)    
     request = urllib2.Request(url, params)
     response = urllib2.urlopen(request)
-    #data = json.load(response)
-    #print data
+    data = json.load(response)
+    print data
 
 
 
 if __name__ == '__main__':
     token = open('access_token.txt','r').read()
-    pageid = '163794787090004'
-    pagetoken = getPageToken(token,pageid)
-    PostPageLink(pageid, pagetoken,'테스트','http://naver.com')
+    #pageid = '163794787090004'
+    pageid = 'webtoonshuttle'
+    #pagetoken = getPageToken(token,pageid)
+    #PostPageLink(pageid, pagetoken,'테스트','http://naver.com')
+    PostPageLink(pageid, token,'테스트','http://naver.com')
 

@@ -11,7 +11,7 @@ import khan
 from xml.dom import minidom
 
 naver_webtoon = {
- '이말년씨리즈':'103759',
+# '이말년씨리즈':'103759',
  '신의탑':'183559',
  '생활의참견':'25613',
  '가우스전자':'335885',
@@ -27,17 +27,25 @@ naver_webtoon = {
 # '아는사람 이야기':'460686',
 # '패션완':'325629',
  '방과 후 전쟁활동':'517773',
+ '복학왕':'626907',
  '기사도':'471181',
  '웃지 않는 개그반':'503253',
+ '전자오락수호대':'637931',
+ '이말년 서유기':'602921',
 # '죽음에 관하여':'500942',
-# '킬러분식':'483613'
+# '킬러분식':'483613',
+ '...':'597481',
+ '...':'119874',
+ '...':'651673'
 }
 
 daum_webtoon = {
  '미생':'miseng',
  '결혼해도 똑같네':'afterwedding',
  '마녀':'witchlove',
- '잉어왕':'petermon'
+ '잉어왕':'petermon',
+ '묘진전':'godstory',
+ '여행해도 똑같네':'travelwithdonggu'
 }
 
 db = None
@@ -113,10 +121,11 @@ def daumToon( id ) :
 def crawling() :
     token = open('access_token.txt','r').read()
     pageid = '163794787090004'
-    pagetoken = fblib.getPageToken(token,pageid)
+    pagetoken = token #fblib.getPageToken(token,pageid)
 
     for key in naver_webtoon.values():
         toon = naverToon(key)
+        toon['link'] = toon['link'].split('weekday=')[0]
         print toon['toon'],toon['title'],toon['link']
         if not checkDup(toon['link']) :
             insertDb(toon['toon'], toon['title'], toon['link'])
@@ -130,12 +139,12 @@ def crawling() :
             msg = '%s / %s'%(toon['toon'],toon['title'])
             fblib.PostPageLink(pageid, pagetoken,msg,toon['link'])
 
-    toon = khan.dori()
-    print toon['toon'],toon['title'],toon['link']
-    if not checkDup(toon['link']) :
-        insertDb(toon['toon'], toon['title'], toon['link'])
-        msg = '%s / %s'%(toon['toon'],toon['title'])
-        fblib.PostPageLink(pageid, pagetoken,msg,toon['link']) 
+    #toon = khan.dori()
+    #print toon['toon'],toon['title'],toon['link']
+    #if not checkDup(toon['link']) :
+    #    insertDb(toon['toon'], toon['title'], toon['link'])
+    #    msg = '%s / %s'%(toon['toon'],toon['title'])
+    #    fblib.PostPageLink(pageid, pagetoken,msg,toon['link']) 
         
 
 
